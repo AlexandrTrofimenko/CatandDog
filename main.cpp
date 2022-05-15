@@ -2,6 +2,7 @@
 //
 
 #include <iostream>
+#include <string>
 struct T_List
 {
 	T_List* right_next;//правый элемент
@@ -49,21 +50,70 @@ void PRINT_DOG(T_List* dog, T_List* cat)//вывод с собаки
 		p = p->left_next;
 	}
 }
-
-void DELETE(T_List* cat)
+void SEARCH(T_List* cat, int k)//поиск элемента по ключу с кота
+{
+	T_List* p = cat;
+	while (p->right_next != nullptr)
+	{
+		if (p->right_next->age == k)
+		{
+			std::cout << "found " << p->right_next->age << std::endl;
+			return;
+		}
+		else
+			p = p->right_next;
+	}
+	std::cout<<"not found "<< k << std::endl;
+}
+void SEARCH(int k, T_List* dog)// поиск элемента по ключу с собаки
+{
+	T_List* p = dog;
+	while (p->left_next != nullptr)
+	{
+		if (p->left_next->age == k)
+		{
+			std::cout << "found " << p->left_next->age << std::endl;
+			return;
+		}
+		else
+			p = p->left_next;
+	}
+	std::cout << "not found " << k << std::endl;
+}
+void DELETE(T_List* cat,int k)//удаление элемента по ключу с кота
 {
 	T_List* tmp;
 	T_List* p = cat;
 	while (p->right_next != nullptr)
 	{
-		if (p->right_next->age % 2 == 0)
+		if (p->right_next->age  == k)
 		{
 			tmp = p->right_next;
 			p->right_next = p->right_next->right_next;
 			delete tmp;
+			T_List* n = p->right_next;
+			n->left_next = p;
 		}
 		else
 			p = p->right_next;
+	}
+}
+void DELETE(int k, T_List* dog)// удаление элемента по ключу с собаки
+{
+	T_List* tmp;
+	T_List* p = dog;
+	while (p->left_next != nullptr)
+	{
+		if (p->left_next->age == k)
+		{
+			tmp = p->left_next;
+			p->left_next = p->left_next->left_next;
+			delete tmp;
+			T_List* n = p->left_next;
+			n->right_next = p;
+		}
+		else
+			p = p->left_next;
 	}
 }
 
@@ -130,10 +180,14 @@ int main()
 	ADD(3,dog);
 	ADD(2,dog);
 	
-	
-	PRINT_CAT(cat,dog);
-	std::cout << "=======";
+	SEARCH(10, dog);
 	PRINT_DOG(dog,cat);
+	DELETE(10, dog);
+	SEARCH(10, dog);
+	std::cout << "=======" << std::endl;
+	PRINT_DOG(dog,cat);
+	std::cout << "====="<<std::endl;
+	PRINT_CAT(cat, dog);
 	
 	CLEAR(cat,dog);
 
