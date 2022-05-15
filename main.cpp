@@ -40,7 +40,7 @@ void PRINT_CAT(T_List* cat,T_List* dog)//вывод с кота
 		p = p->right_next;
 	}
 }
-void PRINT_DOG(T_List* cat, T_List* dog)//вывод с собаки
+void PRINT_DOG(T_List* dog, T_List* cat)//вывод с собаки
 {
 	T_List* p = dog->left_next;
 	while (p != cat)
@@ -130,8 +130,9 @@ int main()
 	ADD(3,dog);
 	ADD(2,dog);
 	
-
+	
 	PRINT_CAT(cat,dog);
+	std::cout << "=======";
 	PRINT_DOG(dog,cat);
 	
 	CLEAR(cat,dog);
