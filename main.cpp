@@ -8,10 +8,11 @@ struct T_List
 	T_List* right_next;//правый элемент
 	T_List* left_next;//левый элемент
 	//std::string surname;
+	int count;//счетчик элементов
 	int age;
 };
 
-void ADD(T_List* cat, int age)//добавление сначала кота
+void ADD_START(T_List* cat, int age)//добавление сначала кота
 {
 	T_List* p = new T_List;
 	p->age = age;
@@ -20,8 +21,9 @@ void ADD(T_List* cat, int age)//добавление сначала кота
 	p->left_next = cat; 
 	T_List* n = p->right_next;
 	n->left_next = p;
+	cat->count += 1;
 }
-void ADD(int age,T_List* dog)//добавление сначала собаки
+void ADD_START(int age,T_List* dog)//добавление сначала собаки
 {
 	T_List* p = new T_List;
 	p->age = age;
@@ -30,8 +32,56 @@ void ADD(int age,T_List* dog)//добавление сначала собаки
 	p->right_next=dog;
 	T_List* n = p->left_next;
 	n->right_next = p;
+	dog->count += 1;
 }
+void ADD_END(T_List* cat, int age)//добавление в конец кота
+{
+	T_List* p = cat;
+	while (p->right_next->right_next != nullptr)
+	{
+		p = p->right_next;
+	}
+	T_List* tmp = new T_List;
+	tmp->age = age;
+	tmp->right_next = p->right_next;
+	p->right_next->left_next = tmp;
+	p->right_next = tmp;
+	tmp->left_next = p;
+	cat->count += 1;
+}
+void ADD_END(int age, T_List* dog)//добавление в конец собаки
+{
 
+	T_List* p = dog;
+	while (p->left_next->left_next != nullptr)
+	{
+		p = p->left_next;
+	}
+	T_List* tmp = new T_List;
+	tmp->age = age;
+	tmp->left_next = p->left_next;
+	p->left_next->right_next = tmp;
+	p->left_next = tmp;
+	tmp->right_next = p;
+	dog->count += 1;
+}
+void ADD_CENTRE(T_List* cat, T_List* dog, int age)//добавление в середину
+{
+	T_List* p = cat;
+	int count = 0;
+	while ((cat->count + dog->count+1) / 2 > count)
+	{
+		p = p->right_next;
+		count = count + 1;
+	}
+	T_List* tmp = new T_List;
+	tmp->age = age;
+	tmp->right_next = p->right_next;
+	p->right_next->left_next = tmp;
+	p->right_next = tmp;
+	tmp->left_next = p;
+	cat->count += 1;
+}
 void PRINT_CAT(T_List* cat,T_List* dog)//вывод с кота
 {
 	T_List* p = cat->right_next;
@@ -97,6 +147,7 @@ void DELETE(T_List* cat,int k)//удаление элемента по ключ�
 		else
 			p = p->right_next;
 	}
+	cat->count -= 1;
 }
 void DELETE(int k, T_List* dog)// удаление элемента по ключу с собаки
 {
@@ -115,8 +166,41 @@ void DELETE(int k, T_List* dog)// удаление элемента по клю�
 		else
 			p = p->left_next;
 	}
+	dog->count -= 1;
 }
-
+void DELETE_START_CAT(T_List* cat)//удаление с начала кота
+{
+	T_List* p = cat->right_next;
+	cat->right_next = p->right_next;
+	p->right_next->left_next = cat;
+	delete p;
+	cat->count -= 1;
+}
+void DELETE_START_DOG(T_List* dog)//удаление с начала собаки
+{
+	T_List* p = dog->left_next;
+	dog->left_next = p->left_next;
+	p->left_next->right_next = dog;
+	delete p;
+	dog->count -= 1;
+}
+void DELETE_CENTRE(T_List* cat, T_List* dog)//удаление из центра
+{
+	T_List* p = cat;
+	int count = 0;
+	while ((cat->count + dog->count + 1) / 2 > count)
+	{
+		p = p->right_next;
+		count = count + 1;
+	}
+	if ((cat->count + dog->count + 1) % 2 != 0)
+		p = p->right_next;
+	T_List* tmp = p->left_next;
+	tmp->right_next = p->right_next;
+	p->right_next->left_next = tmp;
+	delete p;
+	cat->count -= 1;
+}
 void CLEAR(T_List* cat,T_List* dog)//очистка
 {
 	T_List* tmp;
@@ -129,65 +213,34 @@ void CLEAR(T_List* cat,T_List* dog)//очистка
 	}
 }
 
-void DUPLICATE(T_List* cat)
-{
-	T_List* p = cat->right_next;
-	while (p != nullptr)
-	{
-		if (p->age % 2 == 1)
-		{
-			T_List* q = new T_List;
-			q->right_next = p->right_next;
-			p->right_next = q;
-			q->age = p->age;
-			p = p->right_next;
-		}
-		p = p->right_next;
-	}
-}
-
-void SWAPSORT(T_List* cat)
-{
-	//for(int i=0;i<n-1;i++)
-	//	for(int j=i+1;j<n;j++)
-
-	T_List* p = cat->right_next;
-	while (p->right_next->right_next != nullptr)
-	{
-		T_List* q = p->right_next;
-		while (q->right_next != nullptr)
-		{
-			if (p->age > q->age)
-				std::swap(p->age, q->age);
-			q = q->right_next;
-		}
-		p = p->right_next;
-	}
-}
-
 int main()
 {
 	T_List* cat = new T_List;
 	T_List* dog = new T_List;
 	cat->right_next = dog;
+	cat->count = 0;
 	dog->right_next = nullptr;
 	cat->left_next = nullptr;
 	dog->left_next = cat;
+	dog->count = 0;
 
 	//  
-	ADD(cat, 10);
-	ADD(cat, 11);
-	ADD(3,dog);
-	ADD(2,dog);
-	
-	SEARCH(10, dog);
+	ADD_START(cat, 10);
+	ADD_START(cat, 11);
+	ADD_END(12,dog);
+	ADD_START(3,dog);
+	//ADD_START(2,dog);
+	ADD_CENTRE(cat, dog, 5);
+	//SEARCH(10, dog);
 	PRINT_DOG(dog,cat);
-	DELETE(10, dog);
-	SEARCH(10, dog);
+	//DELETE(10, dog);
+	//SEARCH(10, dog);
 	std::cout << "=======" << std::endl;
-	PRINT_DOG(dog,cat);
+	//PRINT_DOG(dog,cat);
+	DELETE_CENTRE(cat, dog);
 	std::cout << "====="<<std::endl;
 	PRINT_CAT(cat, dog);
+	PRINT_DOG(dog, cat);
 	
 	CLEAR(cat,dog);
 
